@@ -9,9 +9,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  base: './',
+  base: '/', // Root path for user sites
   build: {
-    outDir: 'docs',  // GitHub Pages can serve from /docs folder
+    outDir: 'dist', // Standard output directory
     sourcemap: true,
     rollupOptions: {
       output: {

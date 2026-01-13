@@ -9,7 +9,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "predeploy": "npm run build",
+    "predeploy": "npm run build && touch dist/.nojekyll",
     "deploy": "gh-pages -d dist -b gh-pages",
     "deploy:gh-pages": "npm run build && gh-pages -d dist -b gh-pages",
     "deploy:main": "npm run build && git add -f dist && git commit -m \"🚀 Deploy to GitHub Pages\" && git push origin main"
