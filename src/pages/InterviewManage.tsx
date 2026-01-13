@@ -138,6 +138,16 @@ const InterviewManage = () => {
     return { maxQuestionsPerCategory: 2, maxTotalQuestions: 18, selectedTemplate: 'junior' };
   });
 
+  // Local state for input fields to allow editing
+  const [maxQuestionsInput, setMaxQuestionsInput] = useState(settings.maxQuestionsPerCategory.toString());
+  const [maxTotalInput, setMaxTotalInput] = useState(settings.maxTotalQuestions.toString());
+
+  // Sync local state when settings change
+  useEffect(() => {
+    setMaxQuestionsInput(settings.maxQuestionsPerCategory.toString());
+    setMaxTotalInput(settings.maxTotalQuestions.toString());
+  }, [settings]);
+
   // Questions Tab
   const [selectedCategory, setSelectedCategory] = useState('compose');
   const [allQuestions, setAllQuestions] = useState(() => {
@@ -359,7 +369,7 @@ const InterviewManage = () => {
 
   const addCustomCategory = () => {
     if (!newCategoryName.trim()) return;
-
+    
     const categoryId = newCategoryName.toLowerCase().replace(/[^a-z0-9]/g, '');
     if (categories.includes(categoryId)) {
       alert('Category already exists!');
@@ -437,7 +447,7 @@ const InterviewManage = () => {
       className={`flex items-center gap-1.5 px-3 py-2 font-medium rounded text-sm ${
         activeTab === id
           ? 'bg-blue-600 text-white'
-          : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-300'
+          : 'bg-white text-gray-600 dark:text-gray-400 hover:bg-gray-100 border border-gray-300 dark:border-neutral-700'
       }`}
     >
       <Icon size={16} />
@@ -446,11 +456,11 @@ const InterviewManage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-neutral-950">
       <div className="max-w-5xl mx-auto p-4 md:p-6">
         {/* Header */}
-        <div className="border-b border-gray-200 pb-4 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">Manage Interview</h2>
+        <div className="border-b border-gray-200 dark:border-neutral-800 dark:border-neutral-800 pb-4 mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white">Manage Interview</h2>
 
           {/* Tabs */}
           <div className="flex gap-1.5 mt-4 flex-wrap">
@@ -464,8 +474,8 @@ const InterviewManage = () => {
         {activeTab === 'settings' && (
           <div className="space-y-4">
             {/* Interview Templates */}
-            <div className="border border-gray-200 rounded p-4">
-              <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <div className="border border-gray-200 dark:border-neutral-800 rounded p-4">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <Briefcase size={18} className="text-blue-600" />
                 Interview Templates
               </h3>
@@ -477,18 +487,18 @@ const InterviewManage = () => {
                     onClick={() => applyTemplate(id)}
                     className={`p-3 border text-left transition-all group ${
                       settings.selectedTemplate === id
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'
+                        ? 'border-blue-500 bg-blue-50 dark:bg-neutral-800'
+                        : 'border-gray-300 dark:border-neutral-700 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-neutral-700'
                     } rounded-lg`}
                   >
-                    <div className="font-medium text-gray-900 text-sm mb-1">{meta.name}</div>
-                    <div className="text-xs text-gray-500 mb-2">{meta.description}</div>
+                    <div className="font-medium text-gray-900 dark:text-white text-sm mb-1">{meta.name}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">{meta.description}</div>
                     <div className={`text-xs font-medium ${settings.selectedTemplate === id ? 'text-blue-700' : 'text-blue-600 group-hover:text-blue-700'}`}>Load Template →</div>
                   </button>
                 ))}
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded p-3 text-xs">
+              <div className="bg-blue-50 dark:bg-neutral-800 border border-blue-200 dark:border-neutral-700 rounded p-3 text-xs">
                 <p className="text-blue-800 mb-1"><strong>Templates include:</strong></p>
                 <p className="text-blue-700">• Appropriate question difficulty for role level</p>
                 <p className="text-blue-700">• Pre-configured question counts</p>
@@ -497,50 +507,82 @@ const InterviewManage = () => {
             </div>
 
             {/* Question Generation Settings */}
-            <div className="border border-gray-200 rounded p-4">
-              <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <div className="border border-gray-200 dark:border-neutral-800 rounded p-4">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <Sliders size={18} className="text-green-600" />
                 Question Generation
               </h3>
 
               <div className="mb-4">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Maximum Questions per Category
                 </label>
                 <input
                   type="number"
                   min="1"
                   max="10"
-                  value={settings.maxQuestionsPerCategory}
-                  onChange={(e) => setSettings({ ...settings, maxQuestionsPerCategory: parseInt(e.target.value) || 2 })}
-                  className="w-full px-2.5 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-sm"
+                  step="1"
+                  value={maxQuestionsInput}
+                  onChange={(e) => setMaxQuestionsInput(e.target.value)}
+                  onBlur={(e) => {
+                    const value = e.target.value;
+                    if (value === '' || isNaN(parseInt(value))) {
+                      setMaxQuestionsInput(settings.maxQuestionsPerCategory.toString());
+                    } else {
+                      const num = Math.min(10, Math.max(1, parseInt(value)));
+                      setMaxQuestionsInput(num.toString());
+                      setSettings({ ...settings, maxQuestionsPerCategory: num });
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.target.blur();
+                    }
+                  }}
+                  className="w-full px-2.5 py-1.5 border border-gray-300 dark:border-neutral-700 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white text-sm"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Questions randomly selected from each category.
                 </p>
               </div>
 
               <div className="mb-4">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Total Questions Limit
                 </label>
                 <input
                   type="number"
                   min="1"
                   max="50"
-                  value={settings.maxTotalQuestions}
-                  onChange={(e) => setSettings({ ...settings, maxTotalQuestions: parseInt(e.target.value) || 18 })}
-                  className="w-full px-2.5 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-sm"
+                  step="1"
+                  value={maxTotalInput}
+                  onChange={(e) => setMaxTotalInput(e.target.value)}
+                  onBlur={(e) => {
+                    const value = e.target.value;
+                    if (value === '' || isNaN(parseInt(value))) {
+                      setMaxTotalInput(settings.maxTotalQuestions.toString());
+                    } else {
+                      const num = Math.min(50, Math.max(1, parseInt(value)));
+                      setMaxTotalInput(num.toString());
+                      setSettings({ ...settings, maxTotalQuestions: num });
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.target.blur();
+                    }
+                  }}
+                  className="w-full px-2.5 py-1.5 border border-gray-300 dark:border-neutral-700 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white text-sm"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Maximum total questions (capped regardless of categories).
                 </p>
               </div>
 
-              <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-4">
+              <div className="bg-yellow-50 dark:bg-neutral-800 border border-yellow-200 dark:border-neutral-700 rounded p-3 mb-4">
                 <p className="text-xs font-medium text-yellow-900 mb-0.5">Expected Questions</p>
                 <p className="text-xs text-yellow-800">
-                  <strong>{Math.min(categories.length * settings.maxQuestionsPerCategory, settings.maxTotalQuestions)}</strong> questions
+                  <strong>{Math.min(categories.length * settings.maxQuestionsPerCategory, settings.maxTotalQuestions)}</strong> questions 
                   ({categories.length} categories × {settings.maxQuestionsPerCategory} = {categories.length * settings.maxQuestionsPerCategory}, capped at {settings.maxTotalQuestions})
                 </p>
               </div>
@@ -557,14 +599,14 @@ const InterviewManage = () => {
 
         {/* Questions Tab */}
         {activeTab === 'questions' && (
-          <div className="border border-gray-200 rounded p-4">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <div className="border border-gray-200 dark:border-neutral-800 rounded p-4">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <BookOpen size={18} className="text-blue-600" />
               Manage Questions
             </h3>
 
             <div className="mb-4">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Select Category</label>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Select Category</label>
               <div className="flex gap-1.5 flex-wrap border-b pb-2">
                 {categories.map(cat => (
                   <button
@@ -573,7 +615,7 @@ const InterviewManage = () => {
                     className={`px-2.5 py-1 font-medium transition-colors rounded text-xs ${
                       selectedCategory === cat
                         ? 'bg-blue-600 text-white'
-                        : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-300'
+                        : 'bg-white text-gray-600 dark:text-gray-400 hover:bg-gray-100 border border-gray-300 dark:border-neutral-700'
                     }`}
                   >
                     {categoryLabels[cat]} ({allQuestions[cat]?.length || 0})
@@ -584,7 +626,7 @@ const InterviewManage = () => {
 
             <div className="space-y-2 mb-4">
               {allQuestions[selectedCategory]?.map((q, index) => (
-                <div key={index} className="border border-gray-200 rounded p-3 bg-white">
+                <div key={index} className="border border-gray-200 dark:border-neutral-800 rounded p-3 bg-white dark:bg-neutral-900">
                   {editingQuestion?.category === selectedCategory && editingQuestion?.index === index ? (
                     <div className="space-y-2">
                       <input
@@ -594,7 +636,7 @@ const InterviewManage = () => {
                           ...editingQuestion,
                           question: { ...editingQuestion.question, question: e.target.value }
                         })}
-                        className="w-full px-2.5 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-sm"
+                        className="w-full px-2.5 py-1.5 border border-gray-300 dark:border-neutral-700 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white text-sm"
                         placeholder="Question"
                       />
                       <input
@@ -604,7 +646,7 @@ const InterviewManage = () => {
                           ...editingQuestion,
                           question: { ...editingQuestion.question, shortAnswer: e.target.value }
                         })}
-                        className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-xs text-gray-900"
+                        className="w-full px-2.5 py-1.5 border border-gray-300 dark:border-neutral-700 rounded bg-white dark:bg-neutral-800 text-xs text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                         placeholder="Short Answer (optional)"
                       />
                       <input
@@ -614,14 +656,14 @@ const InterviewManage = () => {
                           ...editingQuestion,
                           question: { ...editingQuestion.question, lookFor: e.target.value }
                         })}
-                        className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-xs text-gray-900"
+                        className="w-full px-2.5 py-1.5 border border-gray-300 dark:border-neutral-700 rounded bg-white dark:bg-neutral-800 text-xs text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                         placeholder="Look For (optional)"
                       />
                       <div className="flex gap-2">
                         <button onClick={saveEditQuestion} className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm">
                           <Save size={14} /> Save
                         </button>
-                        <button onClick={() => setEditingQuestion(null)} className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-500 hover:bg-gray-600 text-white rounded text-sm">
+                        <button onClick={() => setEditingQuestion(null)} className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-neutral-8000 hover:bg-gray-600 text-white rounded text-sm">
                           <X size={14} /> Cancel
                         </button>
                       </div>
@@ -629,9 +671,9 @@ const InterviewManage = () => {
                   ) : (
                     <div>
                       <div className="flex justify-between items-start gap-3">
-                        <p className="flex-1 font-medium text-gray-900 text-sm">{q.question}</p>
+                        <p className="flex-1 font-medium text-gray-900 dark:text-white text-sm">{q.question}</p>
                         <div className="flex gap-1">
-                          <button onClick={() => startEditQuestion(selectedCategory, index, q)} className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors">
+                          <button onClick={() => startEditQuestion(selectedCategory, index, q)} className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-neutral-700 rounded transition-colors">
                             <Edit2 size={16} />
                           </button>
                           <button onClick={() => deleteQuestion(selectedCategory, index)} className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors">
@@ -645,29 +687,29 @@ const InterviewManage = () => {
               ))}
             </div>
 
-            <div className="border-2 border-dashed border-gray-300 rounded p-3 bg-white mb-3">
-              <label className="block text-xs font-semibold mb-2 text-gray-700">Add New Question</label>
+            <div className="border-2 border-dashed border-gray-300 dark:border-neutral-700 rounded p-3 bg-white dark:bg-neutral-900 mb-3">
+              <label className="block text-xs font-semibold mb-2 text-gray-700 dark:text-gray-300">Add New Question</label>
               <div className="space-y-2">
                 <input
                   type="text"
                   value={newQuestion}
                   onChange={(e) => setNewQuestion(e.target.value)}
                   placeholder="Question"
-                  className="w-full px-2.5 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-sm"
+                  className="w-full px-2.5 py-1.5 border border-gray-300 dark:border-neutral-700 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white text-sm"
                 />
                 <input
                   type="text"
                   value={newShortAnswer}
                   onChange={(e) => setNewShortAnswer(e.target.value)}
                   placeholder="Short Answer (optional)"
-                  className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-xs text-gray-900"
+                  className="w-full px-2.5 py-1.5 border border-gray-300 dark:border-neutral-700 rounded bg-white dark:bg-neutral-800 text-xs text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                 />
                 <input
                   type="text"
                   value={newLookFor}
                   onChange={(e) => setNewLookFor(e.target.value)}
                   placeholder="Look For (optional)"
-                  className="w-full px-2.5 py-1.5 border border-gray-300 rounded text-xs text-gray-900"
+                  className="w-full px-2.5 py-1.5 border border-gray-300 dark:border-neutral-700 rounded bg-white dark:bg-neutral-800 text-xs text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
                 />
                 <button onClick={() => addQuestion(selectedCategory)} className="flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full font-medium text-sm">
                   <Plus size={16} /> Add Question
@@ -694,22 +736,22 @@ const InterviewManage = () => {
 
         {/* Categories Tab */}
         {activeTab === 'categories' && (
-          <div className="border border-gray-200 rounded p-4">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <div className="border border-gray-200 dark:border-neutral-800 rounded p-4">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <FolderPlus size={18} className="text-blue-600" />
               Manage Categories
             </h3>
 
             {/* Add New Category */}
-            <div className="border-2 border-dashed border-gray-300 rounded p-3 bg-white mb-4">
-              <label className="block text-xs font-semibold mb-2 text-gray-700">Add Custom Category</label>
+            <div className="border-2 border-dashed border-gray-300 dark:border-neutral-700 rounded p-3 bg-white dark:bg-neutral-900 mb-4">
+              <label className="block text-xs font-semibold mb-2 text-gray-700 dark:text-gray-300">Add Custom Category</label>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={newCategoryName}
                   onChange={(e) => setNewCategoryName(e.target.value)}
                   placeholder="Category name (e.g., 'React Native', 'Security')"
-                  className="flex-1 px-2.5 py-1.5 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-sm"
+                  className="flex-1 px-2.5 py-1.5 border border-gray-300 dark:border-neutral-700 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-neutral-800 text-gray-900 dark:text-white text-sm"
                 />
                 <button onClick={addCustomCategory} className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium text-sm">
                   <Plus size={16} /> Add
@@ -719,19 +761,19 @@ const InterviewManage = () => {
 
             {/* Categories List */}
             <div className="space-y-2">
-              <h4 className="text-xs font-semibold text-gray-700 mb-2">Default Categories</h4>
+              <h4 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Default Categories</h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
                 {defaultCategories.map(cat => (
-                  <div key={cat} className="flex items-center justify-between p-2 border border-gray-200 rounded bg-gray-50">
-                    <span className="text-sm font-medium text-gray-700">{defaultCategoryLabels[cat]}</span>
-                    <span className="text-xs text-gray-500">({allQuestions[cat]?.length || 0} questions)</span>
+                  <div key={cat} className="flex items-center justify-between p-2 border border-gray-200 dark:border-neutral-800 rounded bg-gray-50 dark:bg-neutral-800">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{defaultCategoryLabels[cat]}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">({allQuestions[cat]?.length || 0} questions)</span>
                   </div>
                 ))}
               </div>
 
               {Object.keys(customCategories).length > 0 && (
                 <>
-                  <h4 className="text-xs font-semibold text-gray-700 mb-2">Custom Categories</h4>
+                  <h4 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Custom Categories</h4>
                   <div className="space-y-2">
                     {Object.entries(customCategories).map(([categoryId, category]) => (
                       <div key={categoryId} className="flex items-center justify-between p-2 border border-blue-200 rounded bg-blue-50">
@@ -741,12 +783,12 @@ const InterviewManage = () => {
                               type="text"
                               value={editingCategoryName}
                               onChange={(e) => setEditingCategoryName(e.target.value)}
-                              className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
+                              className="flex-1 px-2 py-1 border border-gray-300 dark:border-neutral-700 rounded bg-white dark:bg-neutral-800 text-gray-900 dark:text-white text-sm"
                             />
                             <button onClick={saveEditCategory} className="p-1 text-green-600 hover:bg-green-100 rounded">
                               <Save size={14} />
                             </button>
-                            <button onClick={() => setEditingCategoryId(null)} className="p-1 text-gray-600 hover:bg-gray-100 rounded">
+                            <button onClick={() => setEditingCategoryId(null)} className="p-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 rounded">
                               <X size={14} />
                             </button>
                           </div>
