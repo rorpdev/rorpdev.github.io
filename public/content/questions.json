@@ -1,0 +1,120 @@
+{
+  "_metadata": {
+    "junior": {
+      "name": "Junior Android",
+      "description": "Basic concepts, simple projects",
+      "settings": {
+        "maxQuestionsPerCategory": 2,
+        "maxTotalQuestions": 12
+      }
+    },
+    "mid": {
+      "name": "Mid Android",
+      "description": "Architecture, advanced features",
+      "settings": {
+        "maxQuestionsPerCategory": 2,
+        "maxTotalQuestions": 16
+      }
+    },
+    "senior": {
+      "name": "Senior Android",
+      "description": "Leadership, system design, complex projects",
+      "settings": {
+        "maxQuestionsPerCategory": 3,
+        "maxTotalQuestions": 24
+      }
+    }
+  },
+  "junior": {
+    "compose": [
+      { "question": "What is Jetpack Compose?", "short_answer": "Modern declarative UI toolkit for Android that uses Kotlin functions to build UI", "look_for": "Mentions declarative vs imperative approach" },
+      { "question": "What is a Composable function?", "short_answer": "Function annotated with @Composable that describes UI", "look_for": "Understands it emits UI elements" },
+      { "question": "What does remember do?", "short_answer": "Caches/preserves a value across recompositions", "look_for": "Knows when to use it" },
+      { "question": "What is mutableStateOf?", "short_answer": "Creates observable state that triggers recomposition", "look_for": "Can explain what triggers a recomposition" }
+    ],
+    "android": [
+      { "question": "Name main Activity lifecycle methods", "short_answer": "onCreate, onStart, onResume, onPause, onStop, onDestroy", "look_for": "Gets order right" },
+      { "question": "What happens when you rotate screen?", "short_answer": "Activity is destroyed and recreated with new configuration", "look_for": "Knows how to preserve data" },
+      { "question": "What is an Intent?", "short_answer": "Messaging object to request action from another component", "look_for": "Can explain explicit vs implicit" },
+      { "question": "What is in AndroidManifest.xml?", "short_answer": "Declares components, permissions, features, metadata", "look_for": "Has actually looked at/edited it" }
+    ],
+    "kotlin": [
+      { "question": "val vs var difference?", "short_answer": "val is immutable (read-only), var is mutable", "look_for": "Knows when to prefer val" },
+      { "question": "Explain Kotlin null safety", "short_answer": "Type system forces nullable types with ?", "look_for": "Understands safety benefit over Java" },
+      { "question": "What are safe call and Elvis operators?", "short_answer": "?. for safe calls, ?: for default when null", "look_for": "Shows correct syntax" },
+      { "question": "What is a data class?", "short_answer": "Class for data - generates equals, hashCode, toString, copy", "look_for": "Mentions at least 3 generated methods" }
+    ],
+    "coroutines": [
+      { "question": "What are coroutines?", "short_answer": "Lightweight concurrent - suspend/resume without blocking threads", "look_for": "Mentions non-blocking, async/await" },
+      { "question": "Why use coroutines vs threads?", "short_answer": "Much lighter, easier to write/read, structured concurrency", "look_for": "Understands resource efficiency" },
+      { "question": "What is a suspend function?", "short_answer": "Function that can pause/resume without blocking", "look_for": "Knows it can only be called from coroutine" },
+      { "question": "launch vs async difference?", "short_answer": "launch returns Job (fire-and-forget), async returns Deferred", "look_for": "Knows when to use each" }
+    ],
+    "network": [
+      { "question": "What is Retrofit?", "short_answer": "Type-safe REST client - HTTP API to interface", "look_for": "Mentions @GET @POST annotations" },
+      { "question": "What HTTP methods do you know?", "short_answer": "GET, POST, PUT, PATCH, DELETE", "look_for": "Names at least 3-4" },
+      { "question": "How do you handle API errors?", "short_answer": "Try-catch, check response.isSuccessful, parse error body", "look_for": "Mentions specific HTTP codes" },
+      { "question": "What is JSON?", "short_answer": "JavaScript Object Notation - key-value data format", "look_for": "Knows it's standard for REST" }
+    ],
+    "architecture": [
+      { "question": "What is ViewModel?", "short_answer": "Holds UI data that survives config changes", "look_for": "Mentions lifecycle awareness" },
+      { "question": "Why use ViewModel vs Activity?", "short_answer": "Survives rotation, separates UI logic, testable", "look_for": "Can explain concrete benefit" },
+      { "question": "What is MVVM?", "short_answer": "Model-View-ViewModel pattern", "look_for": "Understands data flow" },
+      { "question": "What is Repository pattern?", "short_answer": "Mediates between data sources and logic", "look_for": "Understands it abstracts data layer" }
+    ],
+    "firebase": [
+      { "question": "What Firebase services have you used?", "short_answer": "Auth, Firestore, Storage, Functions, Analytics", "look_for": "Names specific services used" },
+      { "question": "What is Firebase Authentication?", "short_answer": "Handles authentication with multiple providers", "look_for": "Has implemented it" },
+      { "question": "What is Firestore?", "short_answer": "NoSQL cloud DB with real-time sync", "look_for": "Understands document/collection" }
+    ],
+    "tools": [
+      { "question": "What is Git?", "short_answer": "Version control system for tracking code changes", "look_for": "Knows basic commands" },
+      { "question": "What is a git branch?", "short_answer": "Separate development line for features", "look_for": "Has created and merged branches" },
+      { "question": "What is Gradle?", "short_answer": "Build automation tool for Android", "look_for": "Knows about build.gradle" },
+      { "question": "What debugging tools do you use?", "short_answer": "Debugger, Logcat, Layout Inspector, Network Inspector", "look_for": "Names specific tools used" }
+    ],
+    "project": [
+      { "question": "Tell me about your project (1-2 min)", "short_answer": "", "look_for": "Clear explanation, shows enthusiasm" },
+      { "question": "What was YOUR specific role?", "short_answer": "", "look_for": "Uses 'I' not 'we'" },
+      { "question": "What was the hardest part?", "short_answer": "", "look_for": "Shows problem-solving" },
+      { "question": "What technologies did you use?", "short_answer": "", "look_for": "Accurate list, understands each" }
+    ]
+  },
+  "mid": {
+    "compose": [
+      { "question": "Explain CompositionLocal and its use cases", "short_answer": "Provides data through composition tree implicitly, useful for theme, navigation", "look_for": "Mentions LocalProvider, examples like MaterialTheme" }
+    ],
+    "android": [
+      { "question": "Explain the difference between process and application", "short_answer": "Application can have multiple processes, each process has its own Dalvik/ART instance", "look_for": "Understands multiple process use cases" }
+    ],
+    "kotlin": [
+      { "question": "What are inline functions and when should you use them?", "short_answer": "Function compiled directly at call site, reduces overhead for higher-order functions with lambdas", "look_for": "Mentions reified types, performance" }
+    ],
+    "coroutines": [
+      { "question": "Explain structured concurrency and its benefits", "short_answer": "Parent coroutine waits for children, cancellation propagates, prevents job leaks", "look_for": "Mentions coroutineScope, supervisorScope" }
+    ],
+    "network": [
+      { "question": "What is the difference between Flow and LiveData?", "short_answer": "Flow is reactive stream with operators, LiveData is lifecycle-aware data holder", "look_for": "Knows when to use each" }
+    ],
+    "architecture": [
+      { "question": "Explain Clean Architecture and its layers", "short_answer": "Domain layer (business logic), Data layer (repositories), Presentation layer (UI)", "look_for": "Understands dependency direction" }
+    ],
+    "firebase": [
+      { "question": "Explain Firestore offline capabilities", "short_answer": "Caches data locally, syncs when online, has persistence mode", "look_for": "Mentions enabling offline persistence" }
+    ],
+    "tools": [
+      { "question": "What is CI/CD and how have you used it?", "short_answer": "Continuous Integration/Deployment automates build, test, deploy processes", "look_for": "Mentions GitHub Actions, Jenkins" }
+    ],
+    "project": [
+      { "question": "How did you handle offline mode in your app?", "short_answer": "", "look_for": "Local caching, sync strategies" }
+    ]
+  },
+  "senior": {
+    "architecture": [
+      { "question": "Design a scalable Android app architecture for 10M+ users", "short_answer": "", "look_for": "Microservices, caching, CDN, monitoring" }
+    ],
+    "tools": [
+      { "question": "How do you approach performance optimization at scale?", "short_answer": "Profiling, caching, lazy loading, memory management", "look_for": "Mentions specific tools and metrics" }
+    ]
+  }
+}
