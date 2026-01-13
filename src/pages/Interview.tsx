@@ -96,7 +96,7 @@ const Interview = () => {
   // Load questions from JSON based on role
   useEffect(() => {
     // Load HRD-Junior questions from separate file, others from main question bank
-    const questionFile = role === 'hrd-junior' ? '/content/hrd-junior.json' : '/content/questions.json';
+    const questionFile = role === 'hrd-junior' ? './content/hrd-junior.json' : './content/questions.json';
     
     fetch(questionFile)
       .then(res => res.json())

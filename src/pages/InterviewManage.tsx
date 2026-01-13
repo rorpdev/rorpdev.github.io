@@ -206,7 +206,7 @@ const InterviewManage = () => {
 
   // Load external questions from JSON
   useEffect(() => {
-    fetch('/content/questions.json')
+    fetch('./content/questions.json')
       .then(res => res.json())
       .then(data => {
         const { _metadata, ...questions } = data;

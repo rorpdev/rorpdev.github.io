@@ -30,7 +30,7 @@ const InterviewReview = () => {
   useEffect(() => {
     const loadQuestions = async () => {
       try {
-        const response = await fetch('/content/question.json');
+        const response = await fetch('./content/question.json');
         const data: Question[] = await response.json();
         setAllQuestions(data);
         setLoading(false);
