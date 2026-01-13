@@ -1,0 +1,388 @@
+{
+  "metadata": {
+    "name": "HRD Junior Level Interview",
+    "description": "Standard HRD junior developer interview questions covering essential Android concepts",
+    "level": "hrd-junior",
+    "version": "1.0"
+  },
+  "categories": {
+    "compose": [
+      {
+        "question": "What is Jetpack Compose?",
+        "lookFor": "Mentions declarative vs imperative approach, no more XML layouts, can give example of @Composable function",
+        "short_answer": "Modern declarative UI toolkit for Android using Kotlin",
+        "answer": "**Jetpack Compose** is Android's modern, declarative UI toolkit that uses Kotlin functions to build native UI. Unlike the traditional XML-based approach, Compose uses a **declarative paradigm** where you describe what the UI should look like for any given state, and the framework handles updates. Key features include: **@Composable functions** that emit UI elements, **automatic recomposition** when state changes, **no more XML layouts**, built-in Material Design support, and seamless Kotlin integration. Example: `@Composable fun Greeting(name: String) { Text(\"Hello $name\") }`. This represents a fundamental shift from imperative (XML + findViewById) to declarative UI development."
+      },
+      {
+        "question": "What is a Composable function?",
+        "lookFor": "Understands it emits UI elements, recomposes when state changes, can be nested",
+        "short_answer": "Function annotated with @Composable that describes UI",
+        "answer": "A **Composable function** is a Kotlin function annotated with `@Composable` that describes a piece of UI declaratively. These functions **emit UI elements** rather than returning them, can be called from other composables to build complex hierarchies, and **automatically recompose** when the state they read changes. Unlike traditional Views, composables are lightweight, can be called multiple times, and don't hold state themselves. Example: `@Composable fun UserCard(user: User) { Column { Text(user.name); Text(user.email) } }`. Composables can be nested infinitely, accept parameters to customize behavior, and support modifiers for styling. They're the fundamental building blocks of Compose UI."
+      },
+      {
+        "question": "What does remember do?",
+        "lookFor": "Understands difference between remember and rememberSaveable, knows when to use it (like storing TextField state)",
+        "short_answer": "Caches values across recompositions",
+        "answer": "**remember** is a Compose function that caches/preserves a value across recompositions, preventing it from resetting every time the composable recomposes. Use it for state that should survive recomposition but not configuration changes: `val count = remember { mutableStateOf(0) }`. **Key differences**: `remember` survives recomposition but NOT rotation; `rememberSaveable` survives both recomposition AND configuration changes (rotation, process death) by saving to Bundle. Common use cases: TextField state, scroll positions, expanded/collapsed states, temporary UI state. Without remember, values would reset on every recomposition, losing user input and UI state."
+      },
+      {
+        "question": "What is mutableStateOf?",
+        "lookFor": "Can explain what triggers a recomposition, mentions State<T> type, understands read/write with .value",
+        "short_answer": "Creates observable state that triggers recomposition",
+        "answer": "**mutableStateOf()** creates an observable `State<T>` object that automatically triggers recomposition of any composable reading it when the value changes. It's the foundation of Compose's reactivity system. Usage: `var count by remember { mutableStateOf(0) }` or `val count = remember { mutableStateOf(0) }` (access via `.value`). When you update the state (`count++`), Compose **intelligently recomposes only the composables** that read that specific state, not the entire UI tree. This enables efficient, targeted UI updates. The state is write-observable and read-observable, making it perfect for two-way data binding in forms, counters, toggles, and any interactive UI element."
+      },
+      {
+        "question": "What are Modifiers? Give examples.",
+        "lookFor": "Gives 2-3 real examples, mentions order matters (padding before background vs after), used them in their project",
+        "short_answer": "Chainable decorators for composables (padding, size, background, etc.)",
+        "answer": "**Modifiers** are chainable decorators that modify composable appearance and behavior without changing their core functionality. Examples: `Modifier.padding(16.dp)` adds spacing, `.size(100.dp)` sets dimensions, `.background(Color.Blue)` adds color, `.clickable { }` makes it interactive. **Order matters**: `Modifier.padding(8.dp).background(Color.Red)` (padding then background) produces different results than `.background(Color.Red).padding(8.dp)` (background then padding). Modifiers are applied left-to-right, each wrapping the previous. Common modifiers: `fillMaxWidth()`, `weight(1f)`, `align()`, `clip()`, `border()`, `shadow()`. They're essential for styling and layout in Compose, replacing XML attributes."
+      },
+      {
+        "question": "Column vs LazyColumn difference?",
+        "lookFor": "Understands performance implications, knows when to use each, mentions LazyColumn for long lists",
+        "short_answer": "Column renders all items, LazyColumn renders only visible items",
+        "answer": "**Column** renders all child items immediately, suitable for small lists but causes performance issues with many items since all are in memory. **LazyColumn** is the Compose equivalent of RecyclerView - it **only renders visible items** on screen, recycling views as you scroll. This makes it essential for long lists (hundreds or thousands of items). Performance implications: Column with 1000 items = 1000 composables in memory; LazyColumn with 1000 items = only ~15 visible composables in memory. Use Column for small, fixed lists (< 20 items); LazyColumn for dynamic, scrollable lists. LazyColumn also provides `items()` DSL for easy list rendering: `LazyColumn { items(users) { user -> UserCard(user) } }`."
+      },
+      {
+        "question": "Explain State Hoisting",
+        "lookFor": "Can describe a specific example from their project even if they didn't call it \"state hoisting\", understands \"single source of truth\"",
+        "short_answer": "Moving state from child to parent to make child stateless",
+        "answer": "**State Hoisting** is the pattern of moving state from a child composable up to its parent, making the child **stateless and reusable**. The parent owns the state and passes it down as parameters, while the child passes events up via callbacks. This establishes a **single source of truth** and unidirectional data flow (state down, events up). Example: Instead of `Button` managing its own click state, it receives `onClick: () -> Unit` and `text: String` from parent. Benefits: makes composables reusable, testable, and easier to reason about. It's the foundation of Compose's architecture, similar to React's \"lifting state up\". Even if you didn't call it \"state hoisting\", following this pattern is essential for maintainable Compose apps."
+      },
+      {
+        "question": "What triggers recomposition?",
+        "lookFor": "Understands it's smart/targeted recomposition, not the whole tree, mentions State observation",
+        "short_answer": "When a State object a composable reads changes",
+        "answer": "Recomposition is triggered when a **State object that a composable reads changes**. Compose tracks which composables read which state values and **intelligently recomposes only those specific composables**, not the entire UI tree - this is called **targeted/smart recomposition**. Example: If `Button` reads `count` state and `Text` doesn't, changing `count` only recomposes `Button`. This is fundamentally different from traditional views where you manually update specific UI elements. Recomposition is: **automatic** (happens without explicit calls), **optimized** (only affected composables), **idempotent** (can be called multiple times safely), and **skippable** (if inputs haven't changed, Compose may skip it). Understanding State observation is key to Compose performance."
+      }
+    ],
+    "android": [
+      {
+        "question": "Name main Activity lifecycle methods",
+        "lookFor": "Gets order right, can explain when each is called (onCreate = first time, onResume = visible and interactive)",
+        "short_answer": "onCreate, onStart, onResume, onPause, onStop, onDestroy",
+        "answer": "onCreate, onStart, onResume, onPause, onStop, onDestroy"
+      },
+      {
+        "question": "What happens when you rotate screen?",
+        "lookFor": "Mentions data loss risk, knows how to preserve data (ViewModel, onSaveInstanceState), has dealt with this in their project",
+        "short_answer": "Activity is destroyed and recreated with new configuration",
+        "answer": "**Activity** is destroyed and recreated with new configuration"
+      },
+      {
+        "question": "What is an Intent?",
+        "lookFor": "Can explain explicit (specific target) vs implicit (system chooses), gives real example from their project",
+        "short_answer": "Messaging object used to request an action from another component (start Activity, Service, etc.)",
+        "answer": "**Messaging** object used to request an action from another component (start Activity, Service, etc.) This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What is in AndroidManifest.xml?",
+        "lookFor": "Has actually looked at/edited it, knows you must declare Activities there, mentions permissions",
+        "short_answer": "Declares app components (Activities, Services), permissions, required features, app metadata",
+        "answer": "**Declares** app components (Activities, Services), permissions, required features, app metadata This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What are the 4 main app components?",
+        "lookFor": "Can name all 4 and briefly explain purpose of each, has used at least 2-3 in practice",
+        "short_answer": "Activity, Service, BroadcastReceiver, ContentProvider",
+        "answer": "**Activity,** Service, BroadcastReceiver, ContentProvider This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What is Context?",
+        "lookFor": "Understands it's needed for many operations, knows Application Context vs Activity Context difference",
+        "short_answer": "Interface to application environment - access to resources, system services, starting activities",
+        "answer": "**Interface** to application environment - access to resources, system services, starting activities This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What is a Service?",
+        "lookFor": "Can give example use case (music player, download), mentions foreground vs background services",
+        "short_answer": "Component that runs in background without UI for long-running operations",
+        "answer": "**Component** that runs in background without UI for long-running operations This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What is a BroadcastReceiver?",
+        "lookFor": "Gives example of listening to system events, understands it can wake up app",
+        "short_answer": "Component that responds to system-wide broadcast announcements (battery low, network change, etc.)",
+        "answer": "**Component** that responds to system-wide broadcast announcements (battery low, network change, etc.) This is a fundamental Android concept that developers should understand for building robust applications."
+      }
+    ],
+    "kotlin": [
+      {
+        "question": "val vs var difference?",
+        "lookFor": "Clear distinction, knows when to prefer val (default choice), understands val object can still have mutable contents",
+        "short_answer": "val is immutable reference (read-only), var is mutable (can be reassigned)",
+        "answer": "val is immutable reference (read-only), var is mutable (can be reassigned) Understanding the trade-offs between these options helps you choose the right approach for your specific use case."
+      },
+      {
+        "question": "Explain Kotlin null safety",
+        "lookFor": "Can explain String vs String?, knows this is a major advantage over Java, has used safe calls",
+        "short_answer": "Type system forces you to explicitly mark nullable types with ? - prevents NullPointerException at compile time",
+        "answer": "**Type** system forces you to explicitly mark nullable types with ? - prevents NullPointerException at compile time Proper implementation requires understanding the underlying mechanisms and following Android best practices."
+      },
+      {
+        "question": "What are safe call and Elvis operators?",
+        "lookFor": "Shows syntax correctly (obj?.method, val x = y ?: default), has used them in real code",
+        "short_answer": "?. safely calls method/property only if not null, ?: provides default value when null",
+        "answer": "?. safely calls method/property only if not null, ?: provides default value when null This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What is a data class?",
+        "lookFor": "Mentions at least 3 generated methods, knows when to use it (DTOs, models), used in their project",
+        "short_answer": "Class primarily for holding data - auto-generates equals, hashCode, toString, copy, destructuring",
+        "answer": "**Class** primarily for holding data - auto-generates equals, hashCode, toString, copy, destructuring This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What are lambda expressions?",
+        "lookFor": "Shows syntax, gives example with higher-order function (list.filter, map), used with onClick listeners",
+        "short_answer": "Anonymous functions that can be passed as values - { param -> result }",
+        "answer": "**Anonymous** functions that can be passed as values - { param -> result } This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "Difference between == and ===?",
+        "lookFor": "Understands == calls equals() method, knows when each is useful",
+        "short_answer": "== checks structural equality (values), === checks referential equality (same object in memory)",
+        "answer": "== checks structural equality (values), === checks referential equality (same object in memory) Understanding the trade-offs between these options helps you choose the right approach for your specific use case."
+      }
+    ],
+    "coroutines": [
+      {
+        "question": "What are coroutines?",
+        "lookFor": "Mentions non-blocking, lighter than threads, async/await pattern, has used them for network calls",
+        "short_answer": "Lightweight concurrent programming - suspend/resume execution without blocking threads",
+        "answer": "**Lightweight** concurrent programming - suspend/resume execution without blocking threads This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "Why use coroutines vs threads?",
+        "lookFor": "Understands resource efficiency, mentions readability advantage, knows they're the modern Android way",
+        "short_answer": "Much lighter weight (thousands vs hundreds), easier to write/read, structured concurrency, built-in cancellation",
+        "answer": "**Much** lighter weight (thousands vs hundreds), easier to write/read, structured concurrency, built-in cancellation"
+      },
+      {
+        "question": "What is a suspend function?",
+        "lookFor": "Knows it can only be called from coroutine or another suspend function, has written suspend functions",
+        "short_answer": "Function marked with suspend keyword that can pause execution and resume later without blocking",
+        "answer": "**Function** marked with suspend keyword that can pause execution and resume later without blocking This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "launch vs async difference?",
+        "lookFor": "Knows when to use each, mentions await() for async, has used both in their project",
+        "short_answer": "launch returns Job (fire-and-forget), async returns Deferred that will have a result you can await",
+        "answer": "launch returns Job (fire-and-forget), async returns **Deferred** that will have a result you can await Understanding the trade-offs between these options helps you choose the right approach for your specific use case."
+      },
+      {
+        "question": "What are Dispatchers?",
+        "lookFor": "Names at least 2, knows Main is for UI updates, IO for network/database, used withContext to switch",
+        "short_answer": "Determine which thread pool a coroutine runs on - Main (UI), IO (network/disk), Default (CPU-intensive)",
+        "answer": "**Determine** which thread pool a coroutine runs on - Main (UI), IO (network/disk), Default (CPU-intensive) This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "Why not network on Main thread?",
+        "lookFor": "Mentions user experience/responsiveness, knows this is enforced on newer Android, uses Dispatchers.IO",
+        "short_answer": "Blocks UI thread, freezes app, causes ANR (Application Not Responding) error",
+        "answer": "**Blocks** UI thread, freezes app, causes ANR (Application Not Responding) error"
+      },
+      {
+        "question": "What is viewModelScope?",
+        "lookFor": "Understands automatic cleanup benefit, used it in their project, knows about lifecycleScope too",
+        "short_answer": "CoroutineScope tied to ViewModel lifecycle - automatically cancels when ViewModel is cleared",
+        "answer": "**CoroutineScope** tied to ViewModel lifecycle - automatically cancels when ViewModel is cleared This is a fundamental Android concept that developers should understand for building robust applications."
+      }
+    ],
+    "network": [
+      {
+        "question": "What is Retrofit?",
+        "lookFor": "Has actually used it, mentions annotations like @GET @POST, knows about converters (Gson/Moshi)",
+        "short_answer": "Type-safe REST API client library - turns HTTP API into Kotlin/Java interface with annotations",
+        "answer": "**Type-safe** REST API client library - turns HTTP API into Kotlin/Java interface with annotations This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What HTTP methods do you know?",
+        "lookFor": "Names at least 3-4, can explain when to use each, used them in API calls",
+        "short_answer": "GET (retrieve), POST (create), PUT (update/replace), PATCH (partial update), DELETE (remove)",
+        "answer": "GET (retrieve), **POST** (create), PUT (update/replace), PATCH (partial update), DELETE (remove)"
+      },
+      {
+        "question": "How do you handle API errors?",
+        "lookFor": "Mentions specific HTTP codes (404, 500), shows error states in UI, implements retry logic",
+        "short_answer": "Try-catch for network errors, check response.isSuccessful, parse error body, show user-friendly messages",
+        "answer": "**Try-catch** for network errors, check response.isSuccessful, parse error body, show user-friendly messages Proper implementation requires understanding the underlying mechanisms and following Android best practices."
+      },
+      {
+        "question": "What is JSON?",
+        "lookFor": "Knows it's the standard for REST APIs, mentions parsing with Gson/Moshi, has worked with JSON responses",
+        "short_answer": "JavaScript Object Notation - lightweight text format for data exchange using key-value pairs",
+        "answer": "**JavaScript** Object Notation - lightweight text format for data exchange using key-value pairs This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What is Room?",
+        "lookFor": "Mentions Entity, DAO, Database components, has used it for local persistence, knows @Query annotations",
+        "short_answer": "SQLite database abstraction layer - provides compile-time query verification and reduces boilerplate",
+        "answer": "**SQLite** database abstraction layer - provides compile-time query verification and reduces boilerplate This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What is DataStore?",
+        "lookFor": "Knows it's async (uses coroutines), safer than SharedPreferences, mentions Preferences vs Proto DataStore",
+        "short_answer": "Modern replacement for SharedPreferences - stores key-value pairs or typed objects asynchronously",
+        "answer": "**Modern** replacement for SharedPreferences - stores key-value pairs or typed objects asynchronously This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "Room vs DataStore - when to use?",
+        "lookFor": "Understands trade-offs, gives concrete examples, knows when each is overkill",
+        "short_answer": "Room for complex structured data with relationships/queries, DataStore for simple settings/preferences",
+        "answer": "**Room** for complex structured data with relationships/queries, DataStore for simple settings/preferences"
+      }
+    ],
+    "architecture": [
+      {
+        "question": "What is ViewModel?",
+        "lookFor": "Mentions lifecycle awareness, separation of concerns, has actually used it, knows it shouldn't hold Context reference",
+        "short_answer": "Holds and manages UI-related data that survives configuration changes like rotation",
+        "answer": "**Holds** and manages UI-related data that survives configuration changes like rotation This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "Why use ViewModel vs Activity?",
+        "lookFor": "Can explain a concrete benefit from their project, mentions testability, understands separation of concerns",
+        "short_answer": "Survives rotation/config changes, separates UI logic from UI controller, easier to test, lifecycle-aware",
+        "answer": "**Survives** rotation/config changes, separates UI logic from UI controller, easier to test, lifecycle-aware"
+      },
+      {
+        "question": "What is MVVM?",
+        "lookFor": "Can draw/explain the flow, mentions unidirectional data flow, knows Model is data layer, has used it",
+        "short_answer": "Model-View-ViewModel - architecture pattern where ViewModel exposes data to View via observable streams",
+        "answer": "**Model-View-ViewModel** - architecture pattern where ViewModel exposes data to View via observable streams This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What is Repository pattern?",
+        "lookFor": "Understands it abstracts data layer, handles local vs remote data, used in their project architecture",
+        "short_answer": "Mediates between data sources (network/database) and business logic - single source of truth",
+        "answer": "**Mediates** between data sources (network/database) and business logic - single source of truth This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What is Dependency Injection?",
+        "lookFor": "Explains benefits (testability, loose coupling), can give simple example, knows it makes testing easier",
+        "short_answer": "Providing objects their dependencies from outside instead of creating them internally",
+        "answer": "**Providing** objects their dependencies from outside instead of creating them internally This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What is Hilt?",
+        "lookFor": "Has used it (or Dagger/Koin), mentions @Inject, @HiltAndroidApp, knows it reduces boilerplate",
+        "short_answer": "Dependency injection library built on Dagger - simplified DI for Android with annotations",
+        "answer": "**Dependency** injection library built on Dagger - simplified DI for Android with annotations This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "Why separate layers?",
+        "lookFor": "Can explain concrete benefit, mentions team collaboration, understands it helps with large apps",
+        "short_answer": "Maintainability, testability, scalability - changes in one layer don't affect others",
+        "answer": "**Maintainability,** testability, scalability - changes in one layer don't affect others"
+      }
+    ],
+    "firebase": [
+      {
+        "question": "What Firebase services have you used?",
+        "lookFor": "Names specific services they've actually used, can explain what they did with them, shows real project experience",
+        "short_answer": "Could include: Authentication, Firestore, Realtime DB, Storage, Cloud Functions, Analytics, Crashlytics",
+        "answer": "**Could** include: Authentication, Firestore, Realtime DB, Storage, Cloud Functions, Analytics, Crashlytics"
+      },
+      {
+        "question": "What is Firebase Authentication?",
+        "lookFor": "Has implemented it, mentions token management, knows about FirebaseUser object",
+        "short_answer": "Handles user authentication with multiple providers (email, Google, Facebook, phone)",
+        "answer": "**Handles** user authentication with multiple providers (email, Google, Facebook, phone) This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What is Firestore?",
+        "lookFor": "Understands document/collection structure, mentions real-time listeners, has queried/written data",
+        "short_answer": "NoSQL cloud database with real-time sync - stores data in collections and documents",
+        "answer": "**NoSQL** cloud database with real-time sync - stores data in collections and documents This is a fundamental Android concept that developers should understand for building robust applications."
+      }
+    ],
+    "tools": [
+      {
+        "question": "What is Git?",
+        "lookFor": "Has actually used it, knows basic commands (commit, push, pull), understands why it's important",
+        "short_answer": "Version control system that tracks code changes and enables team collaboration",
+        "answer": "**Version** control system that tracks code changes and enables team collaboration This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What is a git branch?",
+        "lookFor": "Has created and merged branches, mentions feature branches, understands merge conflicts",
+        "short_answer": "Separate line of development that lets you work on features without affecting main code",
+        "answer": "**Separate** line of development that lets you work on features without affecting main code This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What is Gradle?",
+        "lookFor": "Knows about build.gradle files, has added dependencies, mentions implementation vs api",
+        "short_answer": "Build automation tool for Android - manages dependencies, build variants, compilation",
+        "answer": "**Build** automation tool for Android - manages dependencies, build variants, compilation This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What debugging tools do you use?",
+        "lookFor": "Names specific tools they've actually used, shows practical debugging experience, problem-solving approach",
+        "short_answer": "Android Studio debugger, Logcat, breakpoints, Layout Inspector, Network Inspector",
+        "answer": "**Android** Studio debugger, Logcat, breakpoints, Layout Inspector, Network Inspector"
+      },
+      {
+        "question": "What is Logcat?",
+        "lookFor": "Has used it to debug, knows Log.d/e/i levels, can filter by tag/package",
+        "short_answer": "Console that shows system messages, stack traces, and custom logs from your app",
+        "answer": "**Console** that shows system messages, stack traces, and custom logs from your app This is a fundamental Android concept that developers should understand for building robust applications."
+      },
+      {
+        "question": "What is ANR?",
+        "lookFor": "Knows common causes (network on main thread), mentions how to prevent it (background work)",
+        "short_answer": "Application Not Responding - dialog shown when app blocks UI thread for too long (5+ seconds)",
+        "answer": "**Application** Not Responding - dialog shown when app blocks UI thread for too long (5+ seconds) This is a fundamental Android concept that developers should understand for building robust applications."
+      }
+    ],
+    "project": [
+      {
+        "question": "Tell me about your RDA project (1-2 min)",
+        "lookFor": "Clear explanation in own words (not memorized), shows enthusiasm, mentions key features, explains the problem it solved",
+        "short_answer": "Brief explanation needed.",
+        "answer": "**Detailed** explanation needed."
+      },
+      {
+        "question": "What was YOUR specific role?",
+        "lookFor": "Uses \"I\" not \"we\", gives specific features/screens they built, honest about what they did vs didn't do",
+        "short_answer": "Brief explanation needed.",
+        "answer": "**Detailed** explanation needed."
+      },
+      {
+        "question": "What was the hardest part?",
+        "lookFor": "Shows problem-solving, learning from challenges, technical depth, persistence through difficulties",
+        "short_answer": "Brief explanation needed.",
+        "answer": "**Detailed** explanation needed."
+      },
+      {
+        "question": "What technologies did you use?",
+        "lookFor": "Accurate list, actually understands each technology (not just memorized), can explain why they chose them",
+        "short_answer": "Brief explanation needed.",
+        "answer": "**Detailed** explanation needed."
+      },
+      {
+        "question": "How did check-in/check-out work technically?",
+        "lookFor": "Technical details (API calls, database updates, state management), data flow, error handling",
+        "short_answer": "Brief explanation needed.",
+        "answer": "**Detailed** explanation needed. Proper implementation requires understanding the underlying mechanisms and following Android best practices."
+      },
+      {
+        "question": "How did your team collaborate? Git workflow?",
+        "lookFor": "Branching strategy, code reviews, merge conflicts, communication tools, shows real teamwork",
+        "short_answer": "Brief explanation needed.",
+        "answer": "**Detailed** explanation needed. Proper implementation requires understanding the underlying mechanisms and following Android best practices."
+      },
+      {
+        "question": "What would you do differently?",
+        "lookFor": "Self-awareness, growth mindset, learned from experience, technical improvements they'd make",
+        "short_answer": "Brief explanation needed.",
+        "answer": "**Detailed** explanation needed."
+      },
+      {
+        "question": "What feature are you most proud of?",
+        "lookFor": "Shows ownership, explains technical challenges, demonstrates passion, goes into technical detail",
+        "short_answer": "Brief explanation needed.",
+        "answer": "**Detailed** explanation needed."
+      }
+    ]
+  }
+}
